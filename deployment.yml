@@ -1,0 +1,45 @@
+---
+# Kubernetes load balancer service
+kind: Service
+apiVersion: v1
+metadata:
+  name: video-service
+  labels:
+    app: video-service
+spec:
+  selector:
+    app: video-service
+  ports:
+    - protocol: TCP
+      name: http
+      port: 3000
+      targetPort: 3000
+  type: LoadBalancer
+
+
+---
+# Kubernetes cluster
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: video-service
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: video-service
+  template:
+    metadata:
+      labels:
+        app: video-service
+    spec:
+      containers:
+        - name: video-service
+          image: helloyeew/video-service
+          # Force the image to be only pulled from the local registry
+          imagePullPolicy: Never
+          ports:
+            # The application is running on port 3000
+            - protocol: TCP
+              containerPort: 3000
+              
